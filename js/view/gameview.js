@@ -8,17 +8,24 @@ module.exports = Backbone.View.extend({
     events: {
         // 'event-name selector': 'function-to-call'
 
-        'click #player-input': 'enterPlayer'
+        'click #large-start': 'largeEnterPlayer',
+        'click #small-start': 'smallEnterPlayer',
     },
 
-    enterPlayer: function () {
-      let player =  document.getElementById('playerName').value;
-      console.log(player);
-      console.log("GEFF", document.getElementById('playerName').value);
-
-      this.model.update
+    largeEnterPlayer: function () {
+      let player =  document.getElementById('player-name').value;
+      let size = "large"
+      let energy = 150
+      // console.log("view", size);
+      this.model.updatePlayer(player, size, energy);
     },
-
+    smallEnterPlayer: function () {
+      let player =  document.getElementById('player-name').value;
+      let size = "small"
+      let energy = 100
+      // console.log("view", size);
+      this.model.updatePlayer(player, size, energy);
+    },
     // How to update the DOM when things change
     render: function () {
 
@@ -26,7 +33,7 @@ module.exports = Backbone.View.extend({
       let name = this.el.querySelector('#name')
       name.textContent = this.model.get('player');
       // document.getElementById('playerName').value
-      document.getElementById('playerName').value = "";
+      document.getElementById('player-name').value = "";
 
         // let song = this.el.querySelector('#current-song');
         // // song.textContent = this.model.currentSong();

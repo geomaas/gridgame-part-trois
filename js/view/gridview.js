@@ -11,7 +11,6 @@ module.exports = Backbone.View.extend({
         'click #down': 'clickDown',
         'click #left': 'clickLeft',
         'click #right': 'clickRight',
-        // 'click #playerInput': 'enterPlayer'
     },
 
     clickUp: function () {
@@ -31,9 +30,7 @@ module.exports = Backbone.View.extend({
         this.model.right();
     },
 
-    // enterPlayer: function () {
-    //     this.model.currentPlayer();
-    // },
+
 
     // How to update the DOM when things change
     render: function () {
@@ -46,10 +43,13 @@ module.exports = Backbone.View.extend({
         let movesCounter = this.el.querySelector('#moves');
         movesCounter.textContent = this.model.get('moves')
 
-        let energyCounter = this.el.querySelector('#energy')
-        energyCounter.textContent = this.model.get('largeEnergy')
+        let energyCounter = this.el.querySelector('#energy-level')
+        energyCounter.textContent = this.model.get('energy')
 
-      
+        let gridname = this.el.querySelector('#gridname')
+        name.textContent = this.model.get('player');
+
+
 
     },
 });

@@ -1,11 +1,10 @@
-
 let GridModel = require('./model/gridmodel');
 
 
 ///// login page
 let GridView = require('./view/gridview');
 let GameView = require('./view/gameview');
-let GameOverView = require ('./view/gameoverview');
+let GameOverView = require('./view/gameoverview');
 module.exports = Backbone.Router.extend({
     initialize: function() {
         // Models roll on their own.
@@ -25,35 +24,37 @@ module.exports = Backbone.Router.extend({
             el: document.getElementById('player-login'),
         });
 
-        this.over = new GameOverView({
+        this.overScreen = new GameOverView({
             model: grmodel,
             el: document.getElementById('over-screen'),
         });
+
+        grmodel.on('restart', function(model) {
+            console.log(`${model.get('player')}`);
+
+            this.navigate(`game-over`, {
+                trigger: true
+            });
+        }, this);
+    
     },
 
     routes: {
         // url : function
         'game-start': 'player',
         'game-start': 'grid',
-        'game-over': 'restartGame',
+        'game-over': 'overScreen',
         '': 'grid',
         '': 'player',
     },
 
-    // newgame: function () {
-    //     console.log('making a new food');
-    //     // make the add view show up
-    //     this.addView.el.classList.remove('hidden');
-    //     // make the list view hide
-    //     this.listView.el.classList.add('hidden');
-    // },
-    //
-    restartGame: function () {
+
+    overScreen: function() {
         console.log('restart test');
         // make the add view show up
-        this.player.el.classList.remove('hidden');
-        this.grid.el.classList.remove('hidden');
+        this.player.el.classList.add('hidden');
+        this.grid.el.classList.add('hidden');
         // make the list view hide
-        this.over.el.classList.add('hidden');
+        this.overScreen.el.classList.remove('hidden');
     },
 });

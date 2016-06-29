@@ -37,62 +37,128 @@ window.addEventListener('load', function () {
 
 },{"./router":3}],2:[function(require,module,exports){
 module.exports = Backbone.Model.extend({
-    url:'',
+    url: 'http://tiny-tiny.herokuapp.com/collections/grid',
     // Initial value for data that the model is responsible for.
     defaults: {
         xStart: 1, //horizontal
 
         yStart: 1, //vertical
 
-        player: "default",
-
         moves: 0,
 
-        largeEnergy: 150,
+        player: "",
 
-        smallEngergy: 100,
+        size: "",
 
+        energy: 100,
+
+        score: 0,
     },
+    updatePlayer: function(player, size, energy) {
+        this.set('player', player);
+        this.set('size', size);
+        this.set('energy', energy);
+        // this.get('moves');
+        console.log("model", player, size, energy);
 
+        console.log('calling save()');
+
+        // this.save();
+        // this.save(undefined, {
+        //     success: function() {
+        //         console.log("hooray!")
+        //     },
+        //     error: function() {
+        //         console.error('boooo no save');
+        //     },
+        // });
+    },
     up: function() {
-        if (this.get('yStart') < 10) {
-            this.set('yStart', this.get('yStart') + 1);
-            this.set('moves', this.get('moves') + 1);
-            this.set('largeEnergy', this.get('largeEnergy') - 20);
-        }
-        if (this.get('largeEnergy') <= 0) {
-          console.log(restartGame);
+        if (this.get('size') === "large") {
+            if (this.get('yStart') < 10) {
+                this.set('yStart', this.get('yStart') + 1);
+                this.set('moves', this.get('moves') + 1);
+                this.set('energy', this.get('energy') - 20);
+            }
+        } else if (this.get('size') === "small") {
+            if (this.get('yStart') < 10) {
+                this.set('yStart', this.get('yStart') + 1);
+                this.set('moves', this.get('moves') + 1);
+                this.set('energy', this.get('energy') - 10);
+            }
 
         }
-
-
+        if (this.get('energy') <= 0) {
+            console.log("show restart screen");
+            this.set('score',this.get('moves') * 10);
+            this.trigger('restart', this);
+            this.save();
+        }
     },
 
     down: function() {
-        if (this.get('yStart') > 1) {
-            this.set('yStart', this.get('yStart') - 1);
-            this.set('moves', this.get('moves') + 1);
-            this.set('largeEnergy', this.get('largeEnergy') - 20);
+        if (this.get('size') === "large") {
+            if (this.get('yStart') > 1) {
+                this.set('yStart', this.get('yStart') - 1);
+                this.set('moves', this.get('moves') + 1);
+                this.set('energy', this.get('energy') - 20);
+            }
+        } else if (this.get('size') === "small") {
+            if (this.get('yStart') > 1) {
+                this.set('yStart', this.get('yStart') - 1);
+                this.set('moves', this.get('moves') + 1);
+                this.set('energy', this.get('energy') - 10);
+            }
         }
+        if (this.get('energy') <= 0) {
+            console.log("show restart screen");
+            this.trigger('restart', this);
+            this.save();
 
+        }
     },
 
     left: function() {
-        if (this.get('xStart') > 1) {
-            this.set('xStart', this.get('xStart') - 1);
-            this.set('moves', this.get('moves') + 1);
-            this.set('largeEnergy', this.get('largeEnergy') - 20);
+        if (this.get('size') === "large") {
+            if (this.get('xStart') > 1) {
+                this.set('xStart', this.get('xStart') - 1);
+                this.set('moves', this.get('moves') + 1);
+                this.set('energy', this.get('energy') - 20);
+            }
+        } else if (this.get('size') === "small") {
+            if (this.get('xStart') > 1) {
+                this.set('xStart', this.get('xStart') - 1);
+                this.set('moves', this.get('moves') + 1);
+                this.set('energy', this.get('energy') - 10);
+            }
         }
+        if (this.get('energy') <= 0) {
+            console.log("show restart screen");
+            this.trigger('restart', this);
+            this.save();
 
+        }
     },
 
     right: function() {
-        if (this.get('xStart') < 10) {
-            this.set('xStart', this.get('xStart') + 1);
-            this.set('moves', this.get('moves') + 1);
-            this.set('largeEnergy', this.get('largeEnergy') - 20);
+        if (this.get('size') === "large") {
+            if (this.get('xStart') < 10) {
+                this.set('xStart', this.get('xStart') + 1);
+                this.set('moves', this.get('moves') + 1);
+                this.set('energy', this.get('energy') - 20);
+            }
+        } else if (this.get('size') === "small") {
+            if (this.get('xStart') < 10) {
+                this.set('xStart', this.get('xStart') + 1);
+                this.set('moves', this.get('moves') + 1);
+                this.set('energy', this.get('energy') - 10);
+            }
         }
-
+        if (this.get('energy') <= 0) {
+            console.log("show restart screen");
+            this.trigger('restart', this);
+            this.save();
+        }
     },
 
     currentPlayer: function() {
@@ -102,14 +168,13 @@ module.exports = Backbone.Model.extend({
 });
 
 },{}],3:[function(require,module,exports){
-
 let GridModel = require('./model/gridmodel');
 
 
 ///// login page
 let GridView = require('./view/gridview');
 let GameView = require('./view/gameview');
-let GameOverView = require ('./view/gameoverview');
+let GameOverView = require('./view/gameoverview');
 module.exports = Backbone.Router.extend({
     initialize: function() {
         // Models roll on their own.
@@ -129,36 +194,38 @@ module.exports = Backbone.Router.extend({
             el: document.getElementById('player-login'),
         });
 
-        this.over = new GameOverView({
+        this.overScreen = new GameOverView({
             model: grmodel,
             el: document.getElementById('over-screen'),
         });
+
+        grmodel.on('restart', function(model) {
+            console.log(`${model.get('player')}`);
+
+            this.navigate(`game-over`, {
+                trigger: true
+            });
+        }, this);
+    
     },
 
     routes: {
         // url : function
         'game-start': 'player',
         'game-start': 'grid',
-        'game-over': 'restartGame',
+        'game-over': 'overScreen',
         '': 'grid',
         '': 'player',
     },
 
-    // newgame: function () {
-    //     console.log('making a new food');
-    //     // make the add view show up
-    //     this.addView.el.classList.remove('hidden');
-    //     // make the list view hide
-    //     this.listView.el.classList.add('hidden');
-    // },
-    //
-    restartGame: function () {
+
+    overScreen: function() {
         console.log('restart test');
         // make the add view show up
-        this.player.el.classList.remove('hidden');
-        this.grid.el.classList.remove('hidden');
+        this.player.el.classList.add('hidden');
+        this.grid.el.classList.add('hidden');
         // make the list view hide
-        this.over.el.classList.add('hidden');
+        this.overScreen.el.classList.remove('hidden');
     },
 });
 
@@ -200,17 +267,24 @@ module.exports = Backbone.View.extend({
     events: {
         // 'event-name selector': 'function-to-call'
 
-        'click #player-input': 'enterPlayer'
+        'click #large-start': 'largeEnterPlayer',
+        'click #small-start': 'smallEnterPlayer',
     },
 
-    enterPlayer: function () {
-      let player =  document.getElementById('playerName').value;
-      console.log(player);
-      console.log("GEFF", document.getElementById('playerName').value);
-
-      this.model.update
+    largeEnterPlayer: function () {
+      let player =  document.getElementById('player-name').value;
+      let size = "large"
+      let energy = 150
+      // console.log("view", size);
+      this.model.updatePlayer(player, size, energy);
     },
-
+    smallEnterPlayer: function () {
+      let player =  document.getElementById('player-name').value;
+      let size = "small"
+      let energy = 100
+      // console.log("view", size);
+      this.model.updatePlayer(player, size, energy);
+    },
     // How to update the DOM when things change
     render: function () {
 
@@ -218,7 +292,7 @@ module.exports = Backbone.View.extend({
       let name = this.el.querySelector('#name')
       name.textContent = this.model.get('player');
       // document.getElementById('playerName').value
-      document.getElementById('playerName').value = "";
+      document.getElementById('player-name').value = "";
 
         // let song = this.el.querySelector('#current-song');
         // // song.textContent = this.model.currentSong();
@@ -240,7 +314,6 @@ module.exports = Backbone.View.extend({
         'click #down': 'clickDown',
         'click #left': 'clickLeft',
         'click #right': 'clickRight',
-        // 'click #playerInput': 'enterPlayer'
     },
 
     clickUp: function () {
@@ -260,9 +333,7 @@ module.exports = Backbone.View.extend({
         this.model.right();
     },
 
-    // enterPlayer: function () {
-    //     this.model.currentPlayer();
-    // },
+
 
     // How to update the DOM when things change
     render: function () {
@@ -275,10 +346,13 @@ module.exports = Backbone.View.extend({
         let movesCounter = this.el.querySelector('#moves');
         movesCounter.textContent = this.model.get('moves')
 
-        let energyCounter = this.el.querySelector('#energy')
-        energyCounter.textContent = this.model.get('largeEnergy')
+        let energyCounter = this.el.querySelector('#energy-level')
+        energyCounter.textContent = this.model.get('energy')
 
-      
+        let gridname = this.el.querySelector('#gridname')
+        name.textContent = this.model.get('player');
+
+
 
     },
 });

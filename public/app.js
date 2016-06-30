@@ -211,7 +211,7 @@ module.exports = Backbone.Router.extend({
         this.player.on('newGame', function(model) {
             console.log('new player entered');
 
-            this.navigate(`player`, {
+            this.navigate(`grid`, {
                 trigger: true
             });
         }, this);

@@ -1,10 +1,10 @@
 let GridModel = require('./model/gridmodel');
 
-
 ///// login page
 let GridView = require('./view/gridview');
 let GameView = require('./view/gameview');
 let GameOverView = require('./view/gameoverview');
+let HighScoreCollection = require('./model/highscorecollection');
 module.exports = Backbone.Router.extend({
     initialize: function() {
         // Models roll on their own.
@@ -30,25 +30,25 @@ module.exports = Backbone.Router.extend({
         });
 
         grmodel.on('gameOverScreen', function(model) {
-            console.log(`${model.get('player')}`);
+            console.log("restarted game");
 
             this.navigate(`game-over`, {
                 trigger: true
             });
         }, this);
-
+        //
         this.player.on('newGame', function(model) {
             console.log('new player entered');
 
-            this.navigate(`grid`, {
+            this.navigate(`game-start`, {
                 trigger: true
             });
         }, this);
-
-        this.grid.on('playGame', function(model) {
+        //
+        this.overScreen.on('playGame', function(model) {
             console.log('new game started');
 
-            this.navigate(`grid`, {
+            this.navigate(`game-enter`, {
                 trigger: true
             });
         }, this);
@@ -60,9 +60,8 @@ module.exports = Backbone.Router.extend({
         'game-enter': 'player',
         'game-start': 'grid',
         'game-over': 'overScreen',
-        'game-over/:id': 'overScreen',
-        // '': 'grid',
-        // '': 'player',
+        // 'game-over/:id': 'overScreen',
+        '': 'player',
     },
     player: function() {
         console.log('new player screen up');
@@ -80,7 +79,7 @@ module.exports = Backbone.Router.extend({
 
     },
 
-    overScreen: function (id) {
+    overScreen: function () {
         // General pattern: 'if you're not supposed to be
         // here, get out'.
         // if (id === null) {
@@ -90,11 +89,11 @@ module.exports = Backbone.Router.extend({
         //
         let self = this;
 
-        let serverPlayer = new GridModel();
+        let serverPlayer = new HighScoreCollection();
         serverPlayer.fetch({
             url: `http://grid.queencityiron.com/api/highscore`,
             success: function () {
-              console.log("fetch function worked");
+              console.log("fetch function worked", serverPlayer);
                 // todo: fix `this`
                 self.overScreen.model = serverPlayer;
                 self.overScreen.render();

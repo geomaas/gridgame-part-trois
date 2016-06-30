@@ -11,6 +11,7 @@ module.exports = Backbone.View.extend({
         'click #down': 'clickDown',
         'click #left': 'clickLeft',
         'click #right': 'clickRight',
+
     },
 
     clickUp: function () {
@@ -48,8 +49,23 @@ module.exports = Backbone.View.extend({
 
         let gridname = this.el.querySelector('#gridname')
         name.textContent = this.model.get('player');
+        console.log("testY", this.model.get('Player'));
 
+        let grid = this.el.querySelector('#gameboard');
+        grid.innerHTML = "";
 
+        for (var y = 0; y < 10; y++) {
+          let rowY = document.createElement('div');
+          rowY.classList.add('rowY');
+
+          for (var x = 0; x < 10; x++) {
+            let colX = document.createElement('div');
+            colX.classList.add('colX');
+
+            rowY.appendChild(colX);
+          }
+          grid.appendChild(rowY);
+        }
 
     },
 });

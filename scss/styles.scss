@@ -1,15 +1,38 @@
 .login {
-  min-height: 600px;
-  background-color: lightgreen;
+    min-height: 600px;
+    background-color: lightgreen;
 }
 .game-grid {
-  min-height: 600px;
-  background-color: lightblue;
+    min-height: 600px;
+    background-color: lightblue;
 }
-.jumbotron .container{
-  text-align: center;
-  min-height: 300px;
+.jumbotron .container {
+    text-align: center;
+    min-height: 300px;
 }
 .hidden {
-  display: none;
+    display: none;
+}
+.game-box {
+    background-color: lightyellow;
+    height: 600px;
+    width: 600px;
+    margin: 1%;
+}
+.game-keys {
+    display: inline-block;
+}
+.rowY {
+  display: block;
+  width: 98%;
+  height: 9%;
+  background-color: lightgreen;
+  margin: 1%;
+}
+.colX {
+  display: inline-block;
+  width: 8%;
+  height: 80%;
+  background-color: lightpink;
+  margin: 1%;
 }

@@ -40,6 +40,8 @@
                         </div>
                     </div>
                 </div> -->
+                <h3>Gargantua Class</h3>
+                <button class="btn btn-secondary" id="gargantua-start" type="button">Gargantua Start</button>
                 <h3>Large Class</h3>
                 <button class="btn btn-secondary" id="large-start" type="button">Large Start</button>
                 <h3>Small Class</h3>
@@ -47,11 +49,11 @@
             </div>
         </div>
         <div id="position" class="col-md-12 game-grid">
-            <div class="col-lg-offset-1 col-lg-12">
+            <div class="col-lg-offset-1 col-lg-4 game-keys">
                 <h1>Game Grid</h1>
                 <div>
-                    <!-- <h3>Player: <span id="gridname"></span></h3>
-              <h3>Size: <span id="size"></span></h3> -->
+                    <h3>Player: <span id="gridname"></span></h3>
+                    <h3>Size: <span id="size"></span></h3>
                     <div class="vertical">
                         <p>
                             <h3> vertical <span id="vertical">1</span></h3>
@@ -73,13 +75,19 @@
                     </div>
                 </div>
             </div>
+            <div id="gameboard" class="col-lg-12 game-box">
+            </div>
         </div>
-        <div id="over-screen" class="jumbotron jumbotron-fluid">
+        <div id="over-screen" class="jumbotron jumbotron-fluid hidden">
             <div class="container">
                 <h1 class="display-3">GAME OVER!!!</h1>
-                <h2>Player: <span id="gameover-player"></span></h2>
-                <h2>Size: <span id="gameover-size"></span></h2>
-                <h2>Score <span id="gameover-score">0</span></h2>
+                <!-- <h2>Player: <span id="gameover-player"></span></h2>
+                <h2>Player Type: <span id="gameover-size"></span></h2>
+                <h2>Score: <span id="gameover-score">0</span></h2> -->
+                <ul class="list-group">
+                    <li class="list-group-item">Player Score Player Type</li>
+
+                </ul>
                 <h3>Winners Don't Do Drugs!</h3>
                 <button id="restart" type="button" class="btn btn-danger">RESTART</button>
             </div>

@@ -1,5 +1,8 @@
+// let HighScoreCollection = require('./model/highscorecollection');
+// let PlayerCollection = require('./model/playercollection');
+
 module.exports = Backbone.Model.extend({
-    url: 'http://tiny-tiny.herokuapp.com/collections/grid',
+    // url: 'http://tiny-tiny.herokuapp.com/collections/grid',
     // Initial value for data that the model is responsible for.
     defaults: {
         xStart: 1, //horizontal

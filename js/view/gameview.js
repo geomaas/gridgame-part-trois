@@ -31,7 +31,7 @@ module.exports = Backbone.View.extend({
     },
     // How to update the DOM when things change
     render: function () {
-
+      
 
       let name = this.el.querySelector('#name')
       name.textContent = this.model.get('player');

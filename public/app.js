@@ -35,9 +35,12 @@ window.addEventListener('load', function () {
     Backbone.history.start();
 });
 
-},{"./router":3}],2:[function(require,module,exports){
+},{"./router":5}],2:[function(require,module,exports){
+// let HighScoreCollection = require('./model/highscorecollection');
+// let PlayerCollection = require('./model/playercollection');
+
 module.exports = Backbone.Model.extend({
-    url: 'http://tiny-tiny.herokuapp.com/collections/grid',
+    // url: 'http://tiny-tiny.herokuapp.com/collections/grid',
     // Initial value for data that the model is responsible for.
     defaults: {
         xStart: 1, //horizontal
@@ -169,13 +172,37 @@ module.exports = Backbone.Model.extend({
 });
 
 },{}],3:[function(require,module,exports){
-let GridModel = require('./model/gridmodel');
+let HighScore = require('./highscoremodel');
 
+module.exports = Backbone.Collection.extend({
+    url: 'http://grid.queencityiron.com/api/highscore',
+    model: HighScore,
+    initialize: function() {
+
+    },
+
+});
+
+},{"./highscoremodel":4}],4:[function(require,module,exports){
+
+module.exports = Backbone.Collection.extend({
+    url: 'http://grid.queencityiron.com/api/highscore',
+    defaults: {
+        name: '',
+        score: '',
+        playerType: '',
+
+    }
+});
+
+},{}],5:[function(require,module,exports){
+let GridModel = require('./model/gridmodel');
 
 ///// login page
 let GridView = require('./view/gridview');
 let GameView = require('./view/gameview');
 let GameOverView = require('./view/gameoverview');
+let HighScoreCollection = require('./model/highscorecollection');
 module.exports = Backbone.Router.extend({
     initialize: function() {
         // Models roll on their own.
@@ -201,25 +228,25 @@ module.exports = Backbone.Router.extend({
         });
 
         grmodel.on('gameOverScreen', function(model) {
-            console.log(`${model.get('player')}`);
+            console.log("restarted game");
 
             this.navigate(`game-over`, {
                 trigger: true
             });
         }, this);
-
+        //
         this.player.on('newGame', function(model) {
             console.log('new player entered');
 
-            this.navigate(`grid`, {
+            this.navigate(`game-start`, {
                 trigger: true
             });
         }, this);
-
-        this.grid.on('playGame', function(model) {
+        //
+        this.overScreen.on('playGame', function(model) {
             console.log('new game started');
 
-            this.navigate(`grid`, {
+            this.navigate(`game-enter`, {
                 trigger: true
             });
         }, this);
@@ -231,9 +258,8 @@ module.exports = Backbone.Router.extend({
         'game-enter': 'player',
         'game-start': 'grid',
         'game-over': 'overScreen',
-        'game-over/:id': 'overScreen',
-        // '': 'grid',
-        // '': 'player',
+        // 'game-over/:id': 'overScreen',
+        '': 'player',
     },
     player: function() {
         console.log('new player screen up');
@@ -251,7 +277,7 @@ module.exports = Backbone.Router.extend({
 
     },
 
-    overScreen: function (id) {
+    overScreen: function () {
         // General pattern: 'if you're not supposed to be
         // here, get out'.
         // if (id === null) {
@@ -261,11 +287,11 @@ module.exports = Backbone.Router.extend({
         //
         let self = this;
 
-        let serverPlayer = new GridModel();
+        let serverPlayer = new HighScoreCollection();
         serverPlayer.fetch({
             url: `http://grid.queencityiron.com/api/highscore`,
             success: function () {
-              console.log("fetch function worked");
+              console.log("fetch function worked", serverPlayer);
                 // todo: fix `this`
                 self.overScreen.model = serverPlayer;
                 self.overScreen.render();
@@ -278,10 +304,10 @@ module.exports = Backbone.Router.extend({
     },
 });
 
-},{"./model/gridmodel":2,"./view/gameoverview":4,"./view/gameview":5,"./view/gridview":6}],4:[function(require,module,exports){
+},{"./model/gridmodel":2,"./model/highscorecollection":3,"./view/gameoverview":6,"./view/gameview":7,"./view/gridview":8}],6:[function(require,module,exports){
 module.exports = Backbone.View.extend({
     // 'Constructor' function - what to do at the beginning
-    initialize: function () {
+    initialize: function() {
         this.model.on('change', this.render, this); // this as third arg
     },
 
@@ -292,30 +318,41 @@ module.exports = Backbone.View.extend({
         'click #restart': 'restart'
     },
 
-    restart: function () {
-      this.trigger('newGame', this.model);
+    restart: function() {
+        this.trigger('playGame', this.model);
         console.log("clicked");
     },
 
     // How to update the DOM when things change
-    render: function () {
+    render: function() {
+        console.log();
+        // let finalscore = this.el.querySelector('#gameover-score');
+        // finalscore.textContent = this.model.get('score');
+        //
+        // let finalplayer = this.el.querySelector('#gameover-player');
+        // finalplayer.textContent = this.model.get('name');
+        //
+        // let finalsize = this.el.querySelector('#gameover-size');
+        // finalsize.textContent = this.model.get('size');
 
-      let finalscore = this.el.querySelector('#gameover-score');
-      finalscore.textContent = this.model.get('score');
+        // let things = this.el.querySelector('ul');
+        // // console.log(things);
+        // //  things.innerHTML = '';
+        // this.model.forEach(function() {
+        //     // add an <li> to the list
+        //     let item = document.createElement('li');
+        //     item.textContent = `Name: ${this.get('name')}  Score: ${this.get('score')}`;
+        //
+        //     things.appendChild(item);
 
-      let finalplayer = this.el.querySelector('#gameover-player');
-      finalplayer.textContent = this.model.get('name');
 
-      let finalsize = this.el.querySelector('#gameover-size');
-      finalsize.textContent = this.model.get('size');
-
-
+        // });
 
 
     },
 });
 
-},{}],5:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 module.exports = Backbone.View.extend({
     // 'Constructor' function - what to do at the beginning
     initialize: function () {
@@ -349,7 +386,7 @@ module.exports = Backbone.View.extend({
     },
     // How to update the DOM when things change
     render: function () {
-
+      
 
       let name = this.el.querySelector('#name')
       name.textContent = this.model.get('player');
@@ -362,7 +399,7 @@ module.exports = Backbone.View.extend({
     },
 });
 
-},{}],6:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 module.exports = Backbone.View.extend({
     // 'Constructor' function - what to do at the beginning
     initialize: function () {
@@ -376,6 +413,7 @@ module.exports = Backbone.View.extend({
         'click #down': 'clickDown',
         'click #left': 'clickLeft',
         'click #right': 'clickRight',
+
     },
 
     clickUp: function () {
@@ -413,8 +451,23 @@ module.exports = Backbone.View.extend({
 
         let gridname = this.el.querySelector('#gridname')
         name.textContent = this.model.get('player');
+        console.log("testY", this.model.get('Player'));
 
+        let grid = this.el.querySelector('#gameboard');
+        grid.innerHTML = "";
 
+        for (var y = 0; y < 10; y++) {
+          let rowY = document.createElement('div');
+          rowY.classList.add('rowY');
+
+          for (var x = 0; x < 10; x++) {
+            let colX = document.createElement('div');
+            colX.classList.add('colX');
+
+            rowY.appendChild(colX);
+          }
+          grid.appendChild(rowY);
+        }
 
     },
 });

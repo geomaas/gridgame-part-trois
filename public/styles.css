@@ -12,3 +12,26 @@
 
 .hidden {
   display: none; }
+
+.game-box {
+  background-color: lightyellow;
+  height: 600px;
+  width: 600px;
+  margin: 1%; }
+
+.game-keys {
+  display: inline-block; }
+
+.rowY {
+  display: block;
+  width: 98%;
+  height: 9%;
+  background-color: lightgreen;
+  margin: 1%; }
+
+.colX {
+  display: inline-block;
+  width: 8%;
+  height: 80%;
+  background-color: lightpink;
+  margin: 1%; }

@@ -17,7 +17,7 @@ module.exports = Backbone.Router.extend({
             model: grmodel,
             el: document.getElementById('position'),
         });
-        // let login = new GameModel();
+
 
         this.player = new GameView({
             model: grmodel,
@@ -29,32 +29,80 @@ module.exports = Backbone.Router.extend({
             el: document.getElementById('over-screen'),
         });
 
-        grmodel.on('restart', function(model) {
+        grmodel.on('gameOverScreen', function(model) {
             console.log(`${model.get('player')}`);
 
             this.navigate(`game-over`, {
                 trigger: true
             });
         }, this);
-    
+
+        this.player.on('newGame', function(model) {
+            console.log('new player entered');
+
+            this.navigate(`player`, {
+                trigger: true
+            });
+        }, this);
+
+        this.grid.on('playGame', function(model) {
+            console.log('new game started');
+
+            this.navigate(`grid`, {
+                trigger: true
+            });
+        }, this);
+
     },
 
     routes: {
         // url : function
-        'game-start': 'player',
+        'game-enter': 'player',
         'game-start': 'grid',
         'game-over': 'overScreen',
-        '': 'grid',
-        '': 'player',
+        'game-over/:id': 'overScreen',
+        // '': 'grid',
+        // '': 'player',
+    },
+    player: function() {
+        console.log('new player screen up');
+        this.overScreen.el.classList.add('hidden');
+        this.grid.el.classList.add('hidden');
+        this.player.el.classList.remove('hidden');
+
     },
 
+    grid: function() {
+        console.log('new game screen up');
+        this.grid.el.classList.remove('hidden');
+        this.player.el.classList.add('hidden');
+        this.overScreen.el.classList.add('hidden');
 
-    overScreen: function() {
+    },
+
+    overScreen: function (id) {
+        // General pattern: 'if you're not supposed to be
+        // here, get out'.
+        // if (id === null) {
+        //     this.navigate('player', { trigger: true });
+        //     return;
+        // }
+        //
+        let self = this;
+
+        let serverPlayer = new GridModel();
+        serverPlayer.fetch({
+            url: `http://grid.queencityiron.com/api/highscore`,
+            success: function () {
+              console.log("fetch function worked");
+                // todo: fix `this`
+                self.overScreen.model = serverPlayer;
+                self.overScreen.render();
+            },
+        });
         console.log('restart test');
-        // make the add view show up
         this.player.el.classList.add('hidden');
         this.grid.el.classList.add('hidden');
-        // make the list view hide
         this.overScreen.el.classList.remove('hidden');
     },
 });

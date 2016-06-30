@@ -23,8 +23,6 @@ module.exports = Backbone.Model.extend({
         // this.get('moves');
         console.log("model", player, size, energy);
 
-        console.log('calling save()');
-
         // this.save();
         // this.save(undefined, {
         //     success: function() {
@@ -53,7 +51,7 @@ module.exports = Backbone.Model.extend({
         if (this.get('energy') <= 0) {
             console.log("show restart screen");
             this.set('score',this.get('moves') * 10);
-            this.trigger('restart', this);
+            this.trigger('gameOverScreen', this);
             this.save();
         }
     },
@@ -74,7 +72,8 @@ module.exports = Backbone.Model.extend({
         }
         if (this.get('energy') <= 0) {
             console.log("show restart screen");
-            this.trigger('restart', this);
+            this.set('score',this.get('moves') * 10);
+            this.trigger('gameOverScreen', this);
             this.save();
 
         }
@@ -96,7 +95,8 @@ module.exports = Backbone.Model.extend({
         }
         if (this.get('energy') <= 0) {
             console.log("show restart screen");
-            this.trigger('restart', this);
+            this.set('score',this.get('moves') * 10);
+            this.trigger('gameOverScreen', this);
             this.save();
 
         }
@@ -118,7 +118,8 @@ module.exports = Backbone.Model.extend({
         }
         if (this.get('energy') <= 0) {
             console.log("show restart screen");
-            this.trigger('restart', this);
+            this.set('score',this.get('moves') * 10);
+            this.trigger('gameOverScreen', this);
             this.save();
         }
     },

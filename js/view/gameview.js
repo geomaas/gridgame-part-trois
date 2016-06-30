@@ -18,6 +18,7 @@ module.exports = Backbone.View.extend({
       let energy = 150
       // console.log("view", size);
       this.model.updatePlayer(player, size, energy);
+      this.trigger('newGame', this.model);
     },
     smallEnterPlayer: function () {
       let player =  document.getElementById('player-name').value;
@@ -25,6 +26,8 @@ module.exports = Backbone.View.extend({
       let energy = 100
       // console.log("view", size);
       this.model.updatePlayer(player, size, energy);
+      this.trigger('newGame', this.model);
+
     },
     // How to update the DOM when things change
     render: function () {

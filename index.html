@@ -10,13 +10,14 @@
 </head>
 
 <body>
-  <nav>
-    <a href="#game-start">game-start</a>
-    <a href="#game-over"></a>
-  </nav>
+    <nav>
+        <a href="#game-enter">game-enter</a>
+        <a href="#game-start">game-start</a>
+        <a href="#game-over">game-over</a>
+    </nav>
     <div class="row">
-        <div class="col-md-4 login" id="player-login">
-            <div class="col-lg-offset-1 col-lg-10">
+        <div class="col-md-12 login" id="player-login">
+            <div class="col-lg-offset-1 col-lg-12">
                 <h1>Player Login</h1>
                 <div class="input-group">
                     <input type="text" id="player-name" class="form-control" placeholder="Player One">
@@ -45,37 +46,40 @@
                 <button class="btn btn-secondary" id="small-start" type="button">Small Start</button>
             </div>
         </div>
-        <div id="position" class="col-md-8 game-grid">
-            <h1>Game Grid</h1>
-            <div>
-              <!-- <h3>Player: <span id="gridname"></span></h3>
+        <div id="position" class="col-md-12 game-grid">
+            <div class="col-lg-offset-1 col-lg-12">
+                <h1>Game Grid</h1>
+                <div>
+                    <!-- <h3>Player: <span id="gridname"></span></h3>
               <h3>Size: <span id="size"></span></h3> -->
-                <div class="vertical">
-                    <p>
-                        <h3> vertical <span id="vertical">1</span></h3>
-                    </p>
-                    <button id="up" type="button" class="btn btn-primary">Up</button>
-                    <button id="down" type="button" class="btn btn-primary" name="down-button">Down</button>
-                </div>
-                <div class="horizontal">
-                    <p>
-                        <h3>  horizontal <span id="horizontal">1</span> </h3>
-                    </p>
-                    <button id="left" type="button" class="btn btn-primary" name="left-button">Left</button>
-                    <button id="right" type="button" class="btn btn-primary" name="right-button">Right</button>
-                </div>
-                <div class="Stats">
-                  <h4>Moves: <span id="moves">0</span> </h4>
-                  <h4>Energy: <span id="energy-level"></span> </h4>
+                    <div class="vertical">
+                        <p>
+                            <h3> vertical <span id="vertical">1</span></h3>
+                        </p>
+                        <button id="up" type="button" class="btn btn-primary">Up</button>
+                        <button id="down" type="button" class="btn btn-primary" name="down-button">Down</button>
+                    </div>
+                    <div class="horizontal">
+                        <p>
+                            <h3>  horizontal <span id="horizontal">1</span> </h3>
+                        </p>
+                        <button id="left" type="button" class="btn btn-primary" name="left-button">Left</button>
+                        <button id="right" type="button" class="btn btn-primary" name="right-button">Right</button>
+                    </div>
+                    <div class="Stats">
+                        <h4>Moves: <span id="moves">0</span> </h4>
+                        <h4>Energy: <span id="energy-level"></span> </h4>
 
+                    </div>
                 </div>
             </div>
         </div>
-
-        <div id="over-screen" class="jumbotron jumbotron-fluid hidden">
+        <div id="over-screen" class="jumbotron jumbotron-fluid">
             <div class="container">
                 <h1 class="display-3">GAME OVER!!!</h1>
-                <h2>Score <span>0</span></h2>
+                <h2>Player: <span id="gameover-player"></span></h2>
+                <h2>Size: <span id="gameover-size"></span></h2>
+                <h2>Score <span id="gameover-score">0</span></h2>
                 <h3>Winners Don't Do Drugs!</h3>
                 <button id="restart" type="button" class="btn btn-danger">RESTART</button>
             </div>

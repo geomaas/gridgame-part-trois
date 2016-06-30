@@ -61,8 +61,6 @@ module.exports = Backbone.Model.extend({
         // this.get('moves');
         console.log("model", player, size, energy);
 
-        console.log('calling save()');
-
         // this.save();
         // this.save(undefined, {
         //     success: function() {
@@ -91,7 +89,7 @@ module.exports = Backbone.Model.extend({
         if (this.get('energy') <= 0) {
             console.log("show restart screen");
             this.set('score',this.get('moves') * 10);
-            this.trigger('restart', this);
+            this.trigger('gameOverScreen', this);
             this.save();
         }
     },
@@ -112,7 +110,8 @@ module.exports = Backbone.Model.extend({
         }
         if (this.get('energy') <= 0) {
             console.log("show restart screen");
-            this.trigger('restart', this);
+            this.set('score',this.get('moves') * 10);
+            this.trigger('gameOverScreen', this);
             this.save();
 
         }
@@ -134,7 +133,8 @@ module.exports = Backbone.Model.extend({
         }
         if (this.get('energy') <= 0) {
             console.log("show restart screen");
-            this.trigger('restart', this);
+            this.set('score',this.get('moves') * 10);
+            this.trigger('gameOverScreen', this);
             this.save();
 
         }
@@ -156,7 +156,8 @@ module.exports = Backbone.Model.extend({
         }
         if (this.get('energy') <= 0) {
             console.log("show restart screen");
-            this.trigger('restart', this);
+            this.set('score',this.get('moves') * 10);
+            this.trigger('gameOverScreen', this);
             this.save();
         }
     },
@@ -187,7 +188,7 @@ module.exports = Backbone.Router.extend({
             model: grmodel,
             el: document.getElementById('position'),
         });
-        // let login = new GameModel();
+
 
         this.player = new GameView({
             model: grmodel,
@@ -199,32 +200,80 @@ module.exports = Backbone.Router.extend({
             el: document.getElementById('over-screen'),
         });
 
-        grmodel.on('restart', function(model) {
+        grmodel.on('gameOverScreen', function(model) {
             console.log(`${model.get('player')}`);
 
             this.navigate(`game-over`, {
                 trigger: true
             });
         }, this);
-    
+
+        this.player.on('newGame', function(model) {
+            console.log('new player entered');
+
+            this.navigate(`player`, {
+                trigger: true
+            });
+        }, this);
+
+        this.grid.on('playGame', function(model) {
+            console.log('new game started');
+
+            this.navigate(`grid`, {
+                trigger: true
+            });
+        }, this);
+
     },
 
     routes: {
         // url : function
-        'game-start': 'player',
+        'game-enter': 'player',
         'game-start': 'grid',
         'game-over': 'overScreen',
-        '': 'grid',
-        '': 'player',
+        'game-over/:id': 'overScreen',
+        // '': 'grid',
+        // '': 'player',
+    },
+    player: function() {
+        console.log('new player screen up');
+        this.overScreen.el.classList.add('hidden');
+        this.grid.el.classList.add('hidden');
+        this.player.el.classList.remove('hidden');
+
     },
 
+    grid: function() {
+        console.log('new game screen up');
+        this.grid.el.classList.remove('hidden');
+        this.player.el.classList.add('hidden');
+        this.overScreen.el.classList.add('hidden');
 
-    overScreen: function() {
+    },
+
+    overScreen: function (id) {
+        // General pattern: 'if you're not supposed to be
+        // here, get out'.
+        // if (id === null) {
+        //     this.navigate('player', { trigger: true });
+        //     return;
+        // }
+        //
+        let self = this;
+
+        let serverPlayer = new GridModel();
+        serverPlayer.fetch({
+            url: `http://grid.queencityiron.com/api/highscore`,
+            success: function () {
+              console.log("fetch function worked");
+                // todo: fix `this`
+                self.overScreen.model = serverPlayer;
+                self.overScreen.render();
+            },
+        });
         console.log('restart test');
-        // make the add view show up
         this.player.el.classList.add('hidden');
         this.grid.el.classList.add('hidden');
-        // make the list view hide
         this.overScreen.el.classList.remove('hidden');
     },
 });
@@ -244,12 +293,22 @@ module.exports = Backbone.View.extend({
     },
 
     restart: function () {
-        // this.model.();
+      this.trigger('newGame', this.model);
         console.log("clicked");
     },
 
     // How to update the DOM when things change
     render: function () {
+
+      let finalscore = this.el.querySelector('#gameover-score');
+      finalscore.textContent = this.model.get('score');
+
+      let finalplayer = this.el.querySelector('#gameover-player');
+      finalplayer.textContent = this.model.get('name');
+
+      let finalsize = this.el.querySelector('#gameover-size');
+      finalsize.textContent = this.model.get('size');
+
 
 
 
@@ -277,6 +336,7 @@ module.exports = Backbone.View.extend({
       let energy = 150
       // console.log("view", size);
       this.model.updatePlayer(player, size, energy);
+      this.trigger('newGame', this.model);
     },
     smallEnterPlayer: function () {
       let player =  document.getElementById('player-name').value;
@@ -284,6 +344,8 @@ module.exports = Backbone.View.extend({
       let energy = 100
       // console.log("view", size);
       this.model.updatePlayer(player, size, energy);
+      this.trigger('newGame', this.model);
+
     },
     // How to update the DOM when things change
     render: function () {

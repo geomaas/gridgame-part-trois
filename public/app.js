@@ -40,20 +40,26 @@ let HighScoreCollection = require('./highscorecollection');
 let PlayerCollection = require('./playercollection');
 
 module.exports = Backbone.Model.extend({
-    // url: 'http://tiny-tiny.herokuapp.com/collections/grid',
+    initialize: function () {
+
+      this.playercollection = new PlayerCollection();
+    },
     // Initial value for data that the model is responsible for.
     defaults: {
         xStart: 0, //horizontal
 
         yStart: 0, //vertical
 
-        xPowerUp: Math.floor(Math.random() * 10),
+        xPowerUp: Math.ceil(Math.random() * 10),
 
-        yPowerUp: Math.floor(Math.random() * 10),
+        yPowerUp: Math.ceil(Math.random() * 10),
 
         moves: 0,
 
         player: "",
+        playerType: "",
+        energyPerMove:"",
+        startingEnergy:"",
 
         size: "",
 
@@ -61,12 +67,12 @@ module.exports = Backbone.Model.extend({
 
         score: 0,
     },
-    updatePlayer: function(player, size, energy) {
-        this.set('player', player);
-        this.set('size', size);
-        this.set('energy', energy);
-        // this.get('moves');
-        console.log("model", player, size, energy);
+    // updatePlayer: function(player, size, energy) {
+    //     this.set('player', player);
+    //     this.set('size', size);
+    //     this.set('energy', energy);
+    //     // this.get('moves');
+    //     console.log("model", player, size, energy);
 
         // this.save();
         // this.save(undefined, {
@@ -77,6 +83,27 @@ module.exports = Backbone.Model.extend({
         //         console.error('boooo no save');
         //     },
         // });
+    // },
+    setPlayer: function() {
+      console.log("setPlayer function firing");
+        // from riggan via luke. thanks to riggan for explanation cus that shit is confusing.
+        let target = this.playercollection.find(function(type) {
+            return type.get('name') === event.target.textContent;
+        });
+        // end of lukes stuff
+        console.log(target.get('startingEnergy'));
+        this.set('name', document.getElementById('name').value);
+        this.set('playerType', event.target.textContent)
+        this.set('startingEnergy',  target.get('startingEnergy'));
+        this.set('energyPerMove', target.get('energyPerMove'));
+        this.set('score', 0);
+    },
+
+    pullPlayer: function() {
+      console.log("calling to the collection for info");
+      // console.log(this.playercollection.get('getServerPlayer'));
+      this.playercollection.getServerPlayer();
+
     },
     up: function() {
         if (this.get('size') === "large") {
@@ -189,7 +216,7 @@ module.exports = Backbone.Collection.extend({
 
 },{"./highscoremodel":4}],4:[function(require,module,exports){
 
-module.exports = Backbone.Collection.extend({
+module.exports = Backbone.Model.extend({
     url: 'http://grid.queencityiron.com/api/highscore',
     defaults: {
         name: '',
@@ -205,29 +232,31 @@ let PlayerModel = require('./playermodel');
 module.exports = Backbone.Collection.extend({
     url: 'http://grid.queencityiron.com/api/players',
     model: PlayerModel,
-    initialize: function() {
-      let serverPlayer = new HighScoreCollection();
-      serverPlayer.fetch({
-          url: `http://grid.queencityiron.com/api/highscore`,
-          success: function () {
-            console.log("fetch function worked", serverPlayer);
-              // todo: fix `this`
-              self.overScreen.model = serverPlayer;
-              self.overScreen.render();
-          },
-      });
+
+    getServerPlayer: function() {
+      console.log("start player fetch request");
+        let self = this;
+
+        this.fetch({
+            success: function() {
+                console.log("fetch player function worked");
+                self.trigger('newPlayer', this.model);
+            },
+            failure: function() {
+              console.log("you done fucked up the player fetch request");
+            },
+        });
     }
 
 });
 
 },{"./playermodel":6}],6:[function(require,module,exports){
-module.exports = Backbone.Collection.extend({
-    url: 'http://grid.queencityiron.com/api/players',
-    defaults: {
-        name: '',
-        score: '',
-        playerType: '',
+module.exports = Backbone.Model.extend({
 
+    defaults: {
+        name: "weakling",
+        energyPerMove: 1,
+        startingEnergy: 10,
     }
 });
 
@@ -298,7 +327,7 @@ module.exports = Backbone.Router.extend({
         '': 'player',
     },
     player: function() {
-        console.log('new player screen up');
+        console.log('new player screen up from router');
         this.overScreen.el.classList.add('hidden');
         this.grid.el.classList.add('hidden');
         this.player.el.classList.remove('hidden');
@@ -306,7 +335,7 @@ module.exports = Backbone.Router.extend({
     },
 
     grid: function() {
-        console.log('new game screen up');
+        console.log('new game screen up from router');
         this.grid.el.classList.remove('hidden');
         this.player.el.classList.add('hidden');
         this.overScreen.el.classList.add('hidden');
@@ -321,18 +350,18 @@ module.exports = Backbone.Router.extend({
         //     return;
         // }
         //
-        let self = this;
-
-        let serverPlayer = new HighScoreCollection();
-        serverPlayer.fetch({
-            url: `http://grid.queencityiron.com/api/highscore`,
-            success: function () {
-              console.log("fetch function worked", serverPlayer);
-                // todo: fix `this`
-                self.overScreen.model = serverPlayer;
-                self.overScreen.render();
-            },
-        });
+        // let self = this;
+        //
+        // let serverPlayer = new HighScoreCollection();
+        // serverPlayer.fetch({
+        //     url: `http://grid.queencityiron.com/api/highscore`,
+        //     success: function () {
+        //       console.log("fetch function worked", serverPlayer);
+        //         // todo: fix `this`
+        //         self.overScreen.model = serverPlayer;
+        //         self.overScreen.render();
+        //     },
+        // });
         console.log('restart test');
         this.player.el.classList.add('hidden');
         this.grid.el.classList.add('hidden');
@@ -392,48 +421,60 @@ module.exports = Backbone.View.extend({
 },{}],9:[function(require,module,exports){
 module.exports = Backbone.View.extend({
     // 'Constructor' function - what to do at the beginning
-    initialize: function () {
+    initialize: function() {
         this.model.on('change', this.render, this); // this as third arg
-        // this.model.getPlayers;
+        this.model.playercollection.on('newPlayer', this.render, this);
+        console.log('tell model to get players from collection');
+        this.model.pullPlayer();
     },
 
     // Event listeners to set up
     events: {
         // 'event-name selector': 'function-to-call'
 
-        'click #large-start': 'largeEnterPlayer',
-        'click #small-start': 'smallEnterPlayer',
+        // 'click #large-start': 'largeEnterPlayer',
+        // 'click #small-start': 'smallEnterPlayer',
+        'click button': 'enterPlayer',
     },
-
-    largeEnterPlayer: function () {
-      let player =  document.getElementById('player-name').value;
-      let size = "large"
-      let energy = 150
-      // console.log("view", size);
-      this.model.updatePlayer(player, size, energy);
-      this.trigger('newGame', this.model);
-    },
-    smallEnterPlayer: function () {
-      let player =  document.getElementById('player-name').value;
-      let size = "small"
-      let energy = 100
-      // console.log("view", size);
-      this.model.updatePlayer(player, size, energy);
+    enterPlayer: function(){
+      this.model.setPlayer();
       this.trigger('newGame', this.model);
 
     },
+
+    // largeEnterPlayer: function() {
+    //     let player = document.getElementById('player-name').value;
+    //     let size = "large"
+    //     let energy = 150
+    //         // console.log("view", size);
+    //     this.model.updatePlayer(player, size, energy);
+    //     this.trigger('newGame', this.model);
+    // },
+    // smallEnterPlayer: function() {
+    //     let player = document.getElementById('player-name').value;
+    //     let size = "small"
+    //     let energy = 100
+    //         // console.log("view", size);
+    //     this.model.updatePlayer(player, size, energy);
+    //     this.trigger('newGame', this.model);
+    //
+    // },
     // How to update the DOM when things change
-    render: function () {
+    render: function() {
 
 
-      let name = this.el.querySelector('#name')
-      name.textContent = this.model.get('player');
-      // document.getElementById('playerName').value
-      document.getElementById('player-name').value = "";
+        // playerinfo.textContent = this.model.get('player');
+        // document.getElementById('player-name').value = "";
+        let playerinfo = this.el.querySelector('#button-list')
+        console.log("rendering buttons on player screen");
+        console.log(playerinfo);
+        this.model.playercollection.forEach(function(element){
+          let button = document.createElement('button');
+          button.textContent = element.get('name');
+          button.id = element.get('name');
 
-        // let song = this.el.querySelector('#current-song');
-        // // song.textContent = this.model.currentSong();
-        // song.innerHTML = `The song is ${this.model.currentSong()}`;
+          playerinfo.appendChild(button);
+        });
     },
 });
 

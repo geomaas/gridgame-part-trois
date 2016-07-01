@@ -2,20 +2,26 @@ let HighScoreCollection = require('./highscorecollection');
 let PlayerCollection = require('./playercollection');
 
 module.exports = Backbone.Model.extend({
-    // url: 'http://tiny-tiny.herokuapp.com/collections/grid',
+    initialize: function () {
+
+      this.playercollection = new PlayerCollection();
+    },
     // Initial value for data that the model is responsible for.
     defaults: {
         xStart: 0, //horizontal
 
         yStart: 0, //vertical
 
-        xPowerUp: Math.floor(Math.random() * 10),
+        xPowerUp: Math.ceil(Math.random() * 10),
 
-        yPowerUp: Math.floor(Math.random() * 10),
+        yPowerUp: Math.ceil(Math.random() * 10),
 
         moves: 0,
 
         player: "",
+        playerType: "",
+        energyPerMove:"",
+        startingEnergy:"",
 
         size: "",
 
@@ -23,12 +29,12 @@ module.exports = Backbone.Model.extend({
 
         score: 0,
     },
-    updatePlayer: function(player, size, energy) {
-        this.set('player', player);
-        this.set('size', size);
-        this.set('energy', energy);
-        // this.get('moves');
-        console.log("model", player, size, energy);
+    // updatePlayer: function(player, size, energy) {
+    //     this.set('player', player);
+    //     this.set('size', size);
+    //     this.set('energy', energy);
+    //     // this.get('moves');
+    //     console.log("model", player, size, energy);
 
         // this.save();
         // this.save(undefined, {
@@ -39,6 +45,27 @@ module.exports = Backbone.Model.extend({
         //         console.error('boooo no save');
         //     },
         // });
+    // },
+    setPlayer: function() {
+      console.log("setPlayer function firing");
+        // from riggan via luke. thanks to riggan for explanation cus that shit is confusing.
+        let target = this.playercollection.find(function(type) {
+            return type.get('name') === event.target.textContent;
+        });
+        // end of lukes stuff
+        console.log(target.get('startingEnergy'));
+        this.set('name', document.getElementById('name').value);
+        this.set('playerType', event.target.textContent)
+        this.set('startingEnergy',  target.get('startingEnergy'));
+        this.set('energyPerMove', target.get('energyPerMove'));
+        this.set('score', 0);
+    },
+
+    pullPlayer: function() {
+      console.log("calling to the collection for info");
+      // console.log(this.playercollection.get('getServerPlayer'));
+      this.playercollection.getServerPlayer();
+
     },
     up: function() {
         if (this.get('size') === "large") {

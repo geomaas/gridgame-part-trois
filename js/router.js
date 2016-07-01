@@ -64,7 +64,7 @@ module.exports = Backbone.Router.extend({
         '': 'player',
     },
     player: function() {
-        console.log('new player screen up');
+        console.log('new player screen up from router');
         this.overScreen.el.classList.add('hidden');
         this.grid.el.classList.add('hidden');
         this.player.el.classList.remove('hidden');
@@ -72,7 +72,7 @@ module.exports = Backbone.Router.extend({
     },
 
     grid: function() {
-        console.log('new game screen up');
+        console.log('new game screen up from router');
         this.grid.el.classList.remove('hidden');
         this.player.el.classList.add('hidden');
         this.overScreen.el.classList.add('hidden');
@@ -87,18 +87,18 @@ module.exports = Backbone.Router.extend({
         //     return;
         // }
         //
-        let self = this;
-
-        let serverPlayer = new HighScoreCollection();
-        serverPlayer.fetch({
-            url: `http://grid.queencityiron.com/api/highscore`,
-            success: function () {
-              console.log("fetch function worked", serverPlayer);
-                // todo: fix `this`
-                self.overScreen.model = serverPlayer;
-                self.overScreen.render();
-            },
-        });
+        // let self = this;
+        //
+        // let serverPlayer = new HighScoreCollection();
+        // serverPlayer.fetch({
+        //     url: `http://grid.queencityiron.com/api/highscore`,
+        //     success: function () {
+        //       console.log("fetch function worked", serverPlayer);
+        //         // todo: fix `this`
+        //         self.overScreen.model = serverPlayer;
+        //         self.overScreen.render();
+        //     },
+        // });
         console.log('restart test');
         this.player.el.classList.add('hidden');
         this.grid.el.classList.add('hidden');

@@ -3,17 +3,20 @@ let PlayerModel = require('./playermodel');
 module.exports = Backbone.Collection.extend({
     url: 'http://grid.queencityiron.com/api/players',
     model: PlayerModel,
-    initialize: function() {
-      let serverPlayer = new HighScoreCollection();
-      serverPlayer.fetch({
-          url: `http://grid.queencityiron.com/api/highscore`,
-          success: function () {
-            console.log("fetch function worked", serverPlayer);
-              // todo: fix `this`
-              self.overScreen.model = serverPlayer;
-              self.overScreen.render();
-          },
-      });
+
+    getServerPlayer: function() {
+      console.log("start player fetch request");
+        let self = this;
+
+        this.fetch({
+            success: function() {
+                console.log("fetch player function worked");
+                self.trigger('newPlayer', this.model);
+            },
+            failure: function() {
+              console.log("you done fucked up the player fetch request");
+            },
+        });
     }
 
 });

@@ -13,6 +13,7 @@ module.exports = Backbone.View.extend({
 
     restart: function() {
         this.trigger('playGame', this.model);
+        location.reload();
         console.log("clicked");
     },
 

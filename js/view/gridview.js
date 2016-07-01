@@ -49,11 +49,14 @@ module.exports = Backbone.View.extend({
 
         let gridname = this.el.querySelector('#gridname')
         name.textContent = this.model.get('player');
-        console.log("testY", this.model.get('Player'));
+        console.log("testY", this.model.get('player'));
 
         let grid = this.el.querySelector('#gameboard');
         grid.innerHTML = "";
 
+        // let self = this;
+        console.log(this.model.get('xStart'));
+        
         for (var y = 0; y < 10; y++) {
           let rowY = document.createElement('div');
           rowY.classList.add('rowY');
@@ -61,6 +64,9 @@ module.exports = Backbone.View.extend({
           for (var x = 0; x < 10; x++) {
             let colX = document.createElement('div');
             colX.classList.add('colX');
+            if (this.model.get('yStart') === y && this.model.get('xStart') === x) {
+              colX.classList.add('player');
+            }
 
             rowY.appendChild(colX);
           }

@@ -5,9 +5,9 @@ module.exports = Backbone.Model.extend({
     // url: 'http://tiny-tiny.herokuapp.com/collections/grid',
     // Initial value for data that the model is responsible for.
     defaults: {
-        xStart: 1, //horizontal
+        xStart: 0, //horizontal
 
-        yStart: 1, //vertical
+        yStart: 0, //vertical
 
         moves: 0,
 
@@ -38,14 +38,14 @@ module.exports = Backbone.Model.extend({
     },
     up: function() {
         if (this.get('size') === "large") {
-            if (this.get('yStart') < 10) {
-                this.set('yStart', this.get('yStart') + 1);
+            if (this.get('yStart') > 1) {
+                this.set('yStart', this.get('yStart') - 1);
                 this.set('moves', this.get('moves') + 1);
                 this.set('energy', this.get('energy') - 20);
             }
         } else if (this.get('size') === "small") {
-            if (this.get('yStart') < 10) {
-                this.set('yStart', this.get('yStart') + 1);
+            if (this.get('yStart') > 1) {
+                this.set('yStart', this.get('yStart') - 1);
                 this.set('moves', this.get('moves') + 1);
                 this.set('energy', this.get('energy') - 10);
             }
@@ -61,14 +61,14 @@ module.exports = Backbone.Model.extend({
 
     down: function() {
         if (this.get('size') === "large") {
-            if (this.get('yStart') > 1) {
-                this.set('yStart', this.get('yStart') - 1);
+            if (this.get('yStart') < 10) {
+                this.set('yStart', this.get('yStart') + 1);
                 this.set('moves', this.get('moves') + 1);
                 this.set('energy', this.get('energy') - 20);
             }
         } else if (this.get('size') === "small") {
-            if (this.get('yStart') > 1) {
-                this.set('yStart', this.get('yStart') - 1);
+            if (this.get('yStart') < 10) {
+                this.set('yStart', this.get('yStart') + 1);
                 this.set('moves', this.get('moves') + 1);
                 this.set('energy', this.get('energy') - 10);
             }

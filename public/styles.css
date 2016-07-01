@@ -35,3 +35,11 @@
   height: 80%;
   background-color: lightpink;
   margin: 1%; }
+
+.player {
+  display: inline-block;
+  width: 8%;
+  height: 80%;
+  background-color: #004ba8;
+  border-radius: 100%;
+  margin: 1%; }

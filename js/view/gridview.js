@@ -54,9 +54,8 @@ module.exports = Backbone.View.extend({
         let grid = this.el.querySelector('#gameboard');
         grid.innerHTML = "";
 
-        // let self = this;
         console.log(this.model.get('xStart'));
-        
+
         for (var y = 0; y < 10; y++) {
           let rowY = document.createElement('div');
           rowY.classList.add('rowY');
@@ -66,6 +65,9 @@ module.exports = Backbone.View.extend({
             colX.classList.add('colX');
             if (this.model.get('yStart') === y && this.model.get('xStart') === x) {
               colX.classList.add('player');
+            }
+            if (this.model.get('yPowerUp') === y && this.model.get('xPowerUp') === x) {
+              colX.classList.add('power-up');
             }
 
             rowY.appendChild(colX);

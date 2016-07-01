@@ -35,9 +35,9 @@ window.addEventListener('load', function () {
     Backbone.history.start();
 });
 
-},{"./router":5}],2:[function(require,module,exports){
-// let HighScoreCollection = require('./model/highscorecollection');
-// let PlayerCollection = require('./model/playercollection');
+},{"./router":7}],2:[function(require,module,exports){
+let HighScoreCollection = require('./highscorecollection');
+let PlayerCollection = require('./playercollection');
 
 module.exports = Backbone.Model.extend({
     // url: 'http://tiny-tiny.herokuapp.com/collections/grid',
@@ -46,6 +46,10 @@ module.exports = Backbone.Model.extend({
         xStart: 0, //horizontal
 
         yStart: 0, //vertical
+
+        xPowerUp: Math.floor(Math.random() * 10),
+
+        yPowerUp: Math.floor(Math.random() * 10),
 
         moves: 0,
 
@@ -171,7 +175,7 @@ module.exports = Backbone.Model.extend({
 
 });
 
-},{}],3:[function(require,module,exports){
+},{"./highscorecollection":3,"./playercollection":5}],3:[function(require,module,exports){
 let HighScore = require('./highscoremodel');
 
 module.exports = Backbone.Collection.extend({
@@ -196,6 +200,38 @@ module.exports = Backbone.Collection.extend({
 });
 
 },{}],5:[function(require,module,exports){
+let PlayerModel = require('./playermodel');
+
+module.exports = Backbone.Collection.extend({
+    url: 'http://grid.queencityiron.com/api/players',
+    model: PlayerModel,
+    initialize: function() {
+      let serverPlayer = new HighScoreCollection();
+      serverPlayer.fetch({
+          url: `http://grid.queencityiron.com/api/highscore`,
+          success: function () {
+            console.log("fetch function worked", serverPlayer);
+              // todo: fix `this`
+              self.overScreen.model = serverPlayer;
+              self.overScreen.render();
+          },
+      });
+    }
+
+});
+
+},{"./playermodel":6}],6:[function(require,module,exports){
+module.exports = Backbone.Collection.extend({
+    url: 'http://grid.queencityiron.com/api/players',
+    defaults: {
+        name: '',
+        score: '',
+        playerType: '',
+
+    }
+});
+
+},{}],7:[function(require,module,exports){
 let GridModel = require('./model/gridmodel');
 
 ///// login page
@@ -304,7 +340,7 @@ module.exports = Backbone.Router.extend({
     },
 });
 
-},{"./model/gridmodel":2,"./model/highscorecollection":3,"./view/gameoverview":6,"./view/gameview":7,"./view/gridview":8}],6:[function(require,module,exports){
+},{"./model/gridmodel":2,"./model/highscorecollection":3,"./view/gameoverview":8,"./view/gameview":9,"./view/gridview":10}],8:[function(require,module,exports){
 module.exports = Backbone.View.extend({
     // 'Constructor' function - what to do at the beginning
     initialize: function() {
@@ -353,11 +389,12 @@ module.exports = Backbone.View.extend({
     },
 });
 
-},{}],7:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 module.exports = Backbone.View.extend({
     // 'Constructor' function - what to do at the beginning
     initialize: function () {
         this.model.on('change', this.render, this); // this as third arg
+        // this.model.getPlayers;
     },
 
     // Event listeners to set up
@@ -387,7 +424,7 @@ module.exports = Backbone.View.extend({
     },
     // How to update the DOM when things change
     render: function () {
-      
+
 
       let name = this.el.querySelector('#name')
       name.textContent = this.model.get('player');
@@ -400,7 +437,7 @@ module.exports = Backbone.View.extend({
     },
 });
 
-},{}],8:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 module.exports = Backbone.View.extend({
     // 'Constructor' function - what to do at the beginning
     initialize: function () {
@@ -457,9 +494,8 @@ module.exports = Backbone.View.extend({
         let grid = this.el.querySelector('#gameboard');
         grid.innerHTML = "";
 
-        // let self = this;
         console.log(this.model.get('xStart'));
-        
+
         for (var y = 0; y < 10; y++) {
           let rowY = document.createElement('div');
           rowY.classList.add('rowY');
@@ -469,6 +505,9 @@ module.exports = Backbone.View.extend({
             colX.classList.add('colX');
             if (this.model.get('yStart') === y && this.model.get('xStart') === x) {
               colX.classList.add('player');
+            }
+            if (this.model.get('yPowerUp') === y && this.model.get('xPowerUp') === x) {
+              colX.classList.add('power-up');
             }
 
             rowY.appendChild(colX);

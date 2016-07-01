@@ -1,5 +1,5 @@
-// let HighScoreCollection = require('./model/highscorecollection');
-// let PlayerCollection = require('./model/playercollection');
+let HighScoreCollection = require('./highscorecollection');
+let PlayerCollection = require('./playercollection');
 
 module.exports = Backbone.Model.extend({
     // url: 'http://tiny-tiny.herokuapp.com/collections/grid',
@@ -8,6 +8,10 @@ module.exports = Backbone.Model.extend({
         xStart: 0, //horizontal
 
         yStart: 0, //vertical
+
+        xPowerUp: Math.floor(Math.random() * 10),
+
+        yPowerUp: Math.floor(Math.random() * 10),
 
         moves: 0,
 

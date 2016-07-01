@@ -2,6 +2,7 @@ module.exports = Backbone.View.extend({
     // 'Constructor' function - what to do at the beginning
     initialize: function () {
         this.model.on('change', this.render, this); // this as third arg
+        // this.model.getPlayers;
     },
 
     // Event listeners to set up
@@ -31,7 +32,7 @@ module.exports = Backbone.View.extend({
     },
     // How to update the DOM when things change
     render: function () {
-      
+
 
       let name = this.el.querySelector('#name')
       name.textContent = this.model.get('player');

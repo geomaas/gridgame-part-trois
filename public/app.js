@@ -40,9 +40,10 @@ let HighScoreCollection = require('./highscorecollection');
 let PlayerCollection = require('./playercollection');
 
 module.exports = Backbone.Model.extend({
-    initialize: function () {
+    initialize: function() {
 
-      this.playercollection = new PlayerCollection();
+        this.playercollection = new PlayerCollection();
+        this.highscore = new HighScoreCollection();
     },
     // Initial value for data that the model is responsible for.
     defaults: {
@@ -56,14 +57,12 @@ module.exports = Backbone.Model.extend({
 
         moves: 0,
 
-        player: "",
+        name: "wah wah",
         playerType: "",
-        energyPerMove:"",
-        startingEnergy:"",
+        energyPerMove: "",
+        startingEnergy: "",
 
         size: "",
-
-        energy: 100,
 
         score: 0,
     },
@@ -74,125 +73,112 @@ module.exports = Backbone.Model.extend({
     //     // this.get('moves');
     //     console.log("model", player, size, energy);
 
-        // this.save();
-        // this.save(undefined, {
-        //     success: function() {
-        //         console.log("hooray!")
-        //     },
-        //     error: function() {
-        //         console.error('boooo no save');
-        //     },
-        // });
+    // this.save();
+    // this.save(undefined, {
+    //     success: function() {
+    //         console.log("hooray!")
+    //     },
+    //     error: function() {
+    //         console.error('boooo no save');
+    //     },
+    // });
     // },
     setPlayer: function() {
-      console.log("setPlayer function firing");
+        console.log("setPlayer function firing");
         // from riggan via luke. thanks to riggan for explanation cus that shit is confusing.
         let target = this.playercollection.find(function(type) {
             return type.get('name') === event.target.textContent;
         });
         // end of lukes stuff
         console.log(target.get('startingEnergy'));
-        this.set('name', document.getElementById('name').value);
+        this.set('name', document.getElementById('player-name').value);
         this.set('playerType', event.target.textContent)
-        this.set('startingEnergy',  target.get('startingEnergy'));
+        this.set('startingEnergy', target.get('startingEnergy'));
         this.set('energyPerMove', target.get('energyPerMove'));
         this.set('score', 0);
     },
 
     pullPlayer: function() {
-      console.log("calling to the collection for info");
-      // console.log(this.playercollection.get('getServerPlayer'));
-      this.playercollection.getServerPlayer();
+        console.log("calling to the collection for player");
+        this.playercollection.getServerPlayer();
 
     },
-    up: function() {
-        if (this.get('size') === "large") {
-            if (this.get('yStart') > 1) {
-                this.set('yStart', this.get('yStart') - 1);
-                this.set('moves', this.get('moves') + 1);
-                this.set('energy', this.get('energy') - 20);
-            }
-        } else if (this.get('size') === "small") {
-            if (this.get('yStart') > 1) {
-                this.set('yStart', this.get('yStart') - 1);
-                this.set('moves', this.get('moves') + 1);
-                this.set('energy', this.get('energy') - 10);
-            }
+    pullHighScore: function() {
+        console.log("calling for high scores from collection");
+        this.highscore.getServerScore();
 
+    },
+
+    sendScore: function() {
+        let highscore = new HighScoreCollection({
+            name: this.get('name'),
+            score: this.get('score'),
+            playerType: this.get('playerType')
+        });
+        this.highscore.pushScore();
+    },
+
+    up: function() {
+        // if (this.get('size') === "large") {
+        if (this.get('yStart') > 0) {
+            this.set('yStart', this.get('yStart') - 1);
+            this.set('moves', this.get('moves') + 1);
+            this.set('startingEnergy', this.get('startingEnergy') - this.get('energyPerMove'));
         }
-        if (this.get('energy') <= 0) {
+        if (this.get('startingEnergy') <= 0) {
             console.log("show restart screen");
-            this.set('score',this.get('moves') * 10);
+            this.set('score', this.get('moves') * 10);
             this.trigger('gameOverScreen', this);
-            this.save();
+            // this.save();
         }
     },
 
     down: function() {
-        if (this.get('size') === "large") {
-            if (this.get('yStart') < 10) {
-                this.set('yStart', this.get('yStart') + 1);
-                this.set('moves', this.get('moves') + 1);
-                this.set('energy', this.get('energy') - 20);
-            }
-        } else if (this.get('size') === "small") {
-            if (this.get('yStart') < 10) {
-                this.set('yStart', this.get('yStart') + 1);
-                this.set('moves', this.get('moves') + 1);
-                this.set('energy', this.get('energy') - 10);
-            }
+
+        if (this.get('yStart') < 9) {
+            this.set('yStart', this.get('yStart') + 1);
+            this.set('moves', this.get('moves') + 1);
+            this.set('startingEnergy', this.get('startingEnergy') - this.get('energyPerMove'));
         }
-        if (this.get('energy') <= 0) {
+        if (this.get('startingEnergy') <= 0) {
             console.log("show restart screen");
-            this.set('score',this.get('moves') * 10);
+            this.set('score', this.get('moves') * 10);
             this.trigger('gameOverScreen', this);
-            this.save();
+            // this.save();
 
         }
     },
 
     left: function() {
-        if (this.get('size') === "large") {
-            if (this.get('xStart') > 1) {
-                this.set('xStart', this.get('xStart') - 1);
-                this.set('moves', this.get('moves') + 1);
-                this.set('energy', this.get('energy') - 20);
-            }
-        } else if (this.get('size') === "small") {
-            if (this.get('xStart') > 1) {
-                this.set('xStart', this.get('xStart') - 1);
-                this.set('moves', this.get('moves') + 1);
-                this.set('energy', this.get('energy') - 10);
-            }
+
+        if (this.get('xStart') > 0) {
+            this.set('xStart', this.get('xStart') - 1);
+            this.set('moves', this.get('moves') + 1);
+            this.set('startingEnergy', this.get('startingEnergy') - this.get('energyPerMove'));
         }
-        if (this.get('energy') <= 0) {
+
+        if (this.get('startingEnergy') <= 0) {
             console.log("show restart screen");
-            this.set('score',this.get('moves') * 10);
+            this.set('score', this.get('moves') * 10);
             this.trigger('gameOverScreen', this);
-            this.save();
+            // this.save();
 
         }
     },
 
     right: function() {
-        if (this.get('size') === "large") {
-            if (this.get('xStart') < 10) {
-                this.set('xStart', this.get('xStart') + 1);
-                this.set('moves', this.get('moves') + 1);
-                this.set('energy', this.get('energy') - 20);
-            }
-        } else if (this.get('size') === "small") {
-            if (this.get('xStart') < 10) {
-                this.set('xStart', this.get('xStart') + 1);
-                this.set('moves', this.get('moves') + 1);
-                this.set('energy', this.get('energy') - 10);
-            }
+
+        if (this.get('xStart') < 9) {
+            this.set('xStart', this.get('xStart') + 1);
+            this.set('moves', this.get('moves') + 1);
+            this.set('startingEnergy', this.get('startingEnergy') - this.get('energyPerMove'));
         }
-        if (this.get('energy') <= 0) {
+
+        if (this.get('startingEnergy') <= 0) {
             console.log("show restart screen");
-            this.set('score',this.get('moves') * 10);
+            this.set('score', this.get('moves') * 10);
             this.trigger('gameOverScreen', this);
-            this.save();
+            // this.save();
         }
     },
 
@@ -208,8 +194,24 @@ let HighScore = require('./highscoremodel');
 module.exports = Backbone.Collection.extend({
     url: 'http://grid.queencityiron.com/api/highscore',
     model: HighScore,
-    initialize: function() {
 
+    getServerScore: function() {
+      console.log("start high score fetch request");
+        let self = this;
+
+        this.fetch({
+            success: function() {
+                console.log("fetch score function worked");
+                self.trigger('scores', this.model);
+            },
+            failure: function() {
+              console.log("you done fucked up the score fetch request");
+            },
+        });
+    },
+    pushScore: function() {
+      self.save();
+      console.log("saving score to server");
     },
 
 });
@@ -217,11 +219,11 @@ module.exports = Backbone.Collection.extend({
 },{"./highscoremodel":4}],4:[function(require,module,exports){
 
 module.exports = Backbone.Model.extend({
-    url: 'http://grid.queencityiron.com/api/highscore',
+  
     defaults: {
-        name: '',
-        score: '',
-        playerType: '',
+        name: 'test hs',
+        score: 'score hs',
+        playerType: 'playtype hs',
 
     }
 });
@@ -374,13 +376,17 @@ module.exports = Backbone.View.extend({
     // 'Constructor' function - what to do at the beginning
     initialize: function() {
         this.model.on('change', this.render, this); // this as third arg
+        this.model.highscore.on('scores', this.render, this);
+        console.log('tell model to get score from collection');
+        this.model.pullHighScore();
     },
 
     // Event listeners to set up
     events: {
         // 'event-name selector': 'function-to-call'
 
-        'click #restart': 'restart'
+        'click #restart': 'restart',
+        'click #addScore': 'addscore',
     },
 
     restart: function() {
@@ -389,30 +395,34 @@ module.exports = Backbone.View.extend({
         console.log("clicked");
     },
 
+    addscore: function() {
+      this.model.sendScore();
+    },
+
     // How to update the DOM when things change
     render: function() {
-        console.log();
-        // let finalscore = this.el.querySelector('#gameover-score');
-        // finalscore.textContent = this.model.get('score');
-        //
-        // let finalplayer = this.el.querySelector('#gameover-player');
-        // finalplayer.textContent = this.model.get('name');
-        //
-        // let finalsize = this.el.querySelector('#gameover-size');
-        // finalsize.textContent = this.model.get('size');
+        console.log(this.model.get('name'));
+        let finalscore = this.el.querySelector('#gameover-score');
+        finalscore.textContent = this.model.get('score');
 
-        // let things = this.el.querySelector('ul');
-        // // console.log(things);
-        // //  things.innerHTML = '';
-        // this.model.forEach(function() {
-        //     // add an <li> to the list
-        //     let item = document.createElement('li');
-        //     item.textContent = `Name: ${this.get('name')}  Score: ${this.get('score')}`;
-        //
-        //     things.appendChild(item);
+        let finalplayer = this.el.querySelector('#gameover-player');
+        finalplayer.textContent = this.model.get('player');
+
+        let finalsize = this.el.querySelector('#gameover-size');
+        finalsize.textContent = this.model.get('playerType');
+
+        let things = this.el.querySelector('ul');
+        // console.log(things);
+        //  things.innerHTML = '';
+        this.model.highscore.forEach(function(el) {
+            // add an <li> to the list
+            let item = document.createElement('li');
+            item.textContent = `Name: ${el.get('name')}  Score: ${el.get('score')}`;
+
+            things.appendChild(item);
 
 
-        // });
+        });
 
 
     },
@@ -434,12 +444,12 @@ module.exports = Backbone.View.extend({
 
         // 'click #large-start': 'largeEnterPlayer',
         // 'click #small-start': 'smallEnterPlayer',
-        'click button': 'enterPlayer',
+        'click .btn': 'enterPlayer',
     },
-    enterPlayer: function(){
-      this.model.setPlayer();
-      this.trigger('newGame', this.model);
-
+    enterPlayer: function() {
+        this.model.setPlayer();
+        this.trigger('newGame', this.model);
+        let player = document.getElementById('player-name').value;
     },
 
     // largeEnterPlayer: function() {
@@ -467,13 +477,17 @@ module.exports = Backbone.View.extend({
         // document.getElementById('player-name').value = "";
         let playerinfo = this.el.querySelector('#button-list')
         console.log("rendering buttons on player screen");
-        console.log(playerinfo);
-        this.model.playercollection.forEach(function(element){
-          let button = document.createElement('button');
-          button.textContent = element.get('name');
-          button.id = element.get('name');
 
-          playerinfo.appendChild(button);
+        this.model.playercollection.forEach(function(element) {
+            let button = document.createElement('button');
+            button.classList.add('btn');
+            button.classList.add('btn-secondary');
+            button.textContent = element.get('name');
+            button.id = element.get('name');
+
+            let buttonplus = document.getElementsByClassName('button')
+                // buttonplus.addClass('btn btn-secondary')
+            playerinfo.appendChild(button);
         });
     },
 });
@@ -483,6 +497,7 @@ module.exports = Backbone.View.extend({
     // 'Constructor' function - what to do at the beginning
     initialize: function () {
         this.model.on('change', this.render, this); // this as third arg
+
     },
 
     // Event listeners to set up
@@ -497,11 +512,12 @@ module.exports = Backbone.View.extend({
 
     clickUp: function () {
         this.model.up();
-        console.log();
+        console.log("clicked up");
     },
 
     clickDown: function () {
         this.model.down();
+        console.log("clicked down");
     },
 
     clickLeft: function () {
@@ -516,17 +532,17 @@ module.exports = Backbone.View.extend({
 
     // How to update the DOM when things change
     render: function () {
-        let xMove = this.el.querySelector('#horizontal');
-        xMove.textContent = this.model.get('xStart');
-
-        let yMove = this.el.querySelector('#vertical');
-        yMove.textContent = this.model.get('yStart');
+        // let xMove = this.el.querySelector('#horizontal');
+        // xMove.textContent = this.model.get('xStart');
+        //
+        // let yMove = this.el.querySelector('#vertical');
+        // yMove.textContent = this.model.get('yStart');
 
         let movesCounter = this.el.querySelector('#moves');
         movesCounter.textContent = this.model.get('moves')
 
         let energyCounter = this.el.querySelector('#energy-level')
-        energyCounter.textContent = this.model.get('energy')
+        energyCounter.textContent = this.model.get('startingEnergy')
 
         let gridname = this.el.querySelector('#gridname')
         name.textContent = this.model.get('player');

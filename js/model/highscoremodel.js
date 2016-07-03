@@ -1,10 +1,10 @@
 
 module.exports = Backbone.Model.extend({
-    url: 'http://grid.queencityiron.com/api/highscore',
+  
     defaults: {
-        name: '',
-        score: '',
-        playerType: '',
+        name: 'test hs',
+        score: 'score hs',
+        playerType: 'playtype hs',
 
     }
 });

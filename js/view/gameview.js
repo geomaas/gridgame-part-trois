@@ -13,12 +13,12 @@ module.exports = Backbone.View.extend({
 
         // 'click #large-start': 'largeEnterPlayer',
         // 'click #small-start': 'smallEnterPlayer',
-        'click button': 'enterPlayer',
+        'click .btn': 'enterPlayer',
     },
-    enterPlayer: function(){
-      this.model.setPlayer();
-      this.trigger('newGame', this.model);
-
+    enterPlayer: function() {
+        this.model.setPlayer();
+        this.trigger('newGame', this.model);
+        let player = document.getElementById('player-name').value;
     },
 
     // largeEnterPlayer: function() {
@@ -46,13 +46,17 @@ module.exports = Backbone.View.extend({
         // document.getElementById('player-name').value = "";
         let playerinfo = this.el.querySelector('#button-list')
         console.log("rendering buttons on player screen");
-        console.log(playerinfo);
-        this.model.playercollection.forEach(function(element){
-          let button = document.createElement('button');
-          button.textContent = element.get('name');
-          button.id = element.get('name');
 
-          playerinfo.appendChild(button);
+        this.model.playercollection.forEach(function(element) {
+            let button = document.createElement('button');
+            button.classList.add('btn');
+            button.classList.add('btn-secondary');
+            button.textContent = element.get('name');
+            button.id = element.get('name');
+
+            let buttonplus = document.getElementsByClassName('button')
+                // buttonplus.addClass('btn btn-secondary')
+            playerinfo.appendChild(button);
         });
     },
 });

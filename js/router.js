@@ -80,25 +80,6 @@ module.exports = Backbone.Router.extend({
     },
 
     overScreen: function () {
-        // General pattern: 'if you're not supposed to be
-        // here, get out'.
-        // if (id === null) {
-        //     this.navigate('player', { trigger: true });
-        //     return;
-        // }
-        //
-        // let self = this;
-        //
-        // let serverPlayer = new HighScoreCollection();
-        // serverPlayer.fetch({
-        //     url: `http://grid.queencityiron.com/api/highscore`,
-        //     success: function () {
-        //       console.log("fetch function worked", serverPlayer);
-        //         // todo: fix `this`
-        //         self.overScreen.model = serverPlayer;
-        //         self.overScreen.render();
-        //     },
-        // });
         console.log('restart test');
         this.player.el.classList.add('hidden');
         this.grid.el.classList.add('hidden');

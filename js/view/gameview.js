@@ -10,9 +10,6 @@ module.exports = Backbone.View.extend({
     // Event listeners to set up
     events: {
         // 'event-name selector': 'function-to-call'
-
-        // 'click #large-start': 'largeEnterPlayer',
-        // 'click #small-start': 'smallEnterPlayer',
         'click .btn': 'enterPlayer',
     },
     enterPlayer: function() {
@@ -20,24 +17,6 @@ module.exports = Backbone.View.extend({
         this.trigger('newGame', this.model);
         let player = document.getElementById('player-name').value;
     },
-
-    // largeEnterPlayer: function() {
-    //     let player = document.getElementById('player-name').value;
-    //     let size = "large"
-    //     let energy = 150
-    //         // console.log("view", size);
-    //     this.model.updatePlayer(player, size, energy);
-    //     this.trigger('newGame', this.model);
-    // },
-    // smallEnterPlayer: function() {
-    //     let player = document.getElementById('player-name').value;
-    //     let size = "small"
-    //     let energy = 100
-    //         // console.log("view", size);
-    //     this.model.updatePlayer(player, size, energy);
-    //     this.trigger('newGame', this.model);
-    //
-    // },
     // How to update the DOM when things change
     render: function() {
 

@@ -5,7 +5,7 @@ module.exports = Backbone.Collection.extend({
     model: HighScore,
 
     getServerScore: function() {
-      console.log("start high score fetch request");
+        console.log("start high score fetch request");
         let self = this;
 
         this.fetch({
@@ -14,13 +14,13 @@ module.exports = Backbone.Collection.extend({
                 self.trigger('scores', this.model);
             },
             failure: function() {
-              console.log("you done fucked up the score fetch request");
+                console.log("you done fucked up the score fetch request");
             },
         });
     },
-    pushScore: function() {
-      self.save();
-      console.log("saving score to server");
-    },
+    // pushScore: function() {
+    //     console.log("saving score to server");
+    //     this.invoke('save');
+    // },
 
 });

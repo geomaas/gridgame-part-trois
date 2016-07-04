@@ -8,6 +8,7 @@ module.exports = Backbone.Model.extend({
         this.highscore = new HighScoreCollection();
     },
     // Initial value for data that the model is responsible for.
+    url: 'http://grid.queencityiron.com/api/highscore',
     defaults: {
         xStart: 0, //horizontal
 
@@ -23,28 +24,19 @@ module.exports = Backbone.Model.extend({
         playerType: "",
         energyPerMove: "",
         startingEnergy: "",
+        powerup: 10,
 
         size: "",
 
         score: 0,
     },
-    // updatePlayer: function(player, size, energy) {
-    //     this.set('player', player);
-    //     this.set('size', size);
-    //     this.set('energy', energy);
-    //     // this.get('moves');
-    //     console.log("model", player, size, energy);
-
-    // this.save();
-    // this.save(undefined, {
-    //     success: function() {
-    //         console.log("hooray!")
-    //     },
-    //     error: function() {
-    //         console.error('boooo no save');
-    //     },
-    // });
-    // },
+    setPowerUp: function() {
+        this.get('xPowerUp');
+        this.get('yPowerUp');
+    },
+    addPowerUp: function() {
+        this.set('startingEnergy', this.get('startingEnergy') + this.get('powerup'));
+    },
     setPlayer: function() {
         console.log("setPlayer function firing");
         // from riggan via luke. thanks to riggan for explanation cus that shit is confusing.
@@ -72,12 +64,12 @@ module.exports = Backbone.Model.extend({
     },
 
     sendScore: function() {
-        let highscore = new HighScoreCollection({
-            name: this.get('name'),
-            score: this.get('score'),
-            playerType: this.get('playerType')
-        });
-        this.highscore.pushScore();
+        this.get('name'),
+        this.get('score'),
+        this.get('playerType')
+        this.save();
+        console.log("sending score info");
+        // this.highscore.pushScore();
     },
 
     up: function() {
@@ -86,10 +78,12 @@ module.exports = Backbone.Model.extend({
             this.set('yStart', this.get('yStart') - 1);
             this.set('moves', this.get('moves') + 1);
             this.set('startingEnergy', this.get('startingEnergy') - this.get('energyPerMove'));
+            this.set('score', this.get('moves') * 10);
+
         }
         if (this.get('startingEnergy') <= 0) {
             console.log("show restart screen");
-            this.set('score', this.get('moves') * 10);
+            // this.set('score', this.get('moves') * 10);
             this.trigger('gameOverScreen', this);
             // this.save();
         }
@@ -101,10 +95,12 @@ module.exports = Backbone.Model.extend({
             this.set('yStart', this.get('yStart') + 1);
             this.set('moves', this.get('moves') + 1);
             this.set('startingEnergy', this.get('startingEnergy') - this.get('energyPerMove'));
+            this.set('score', this.get('moves') * 10);
+
         }
         if (this.get('startingEnergy') <= 0) {
             console.log("show restart screen");
-            this.set('score', this.get('moves') * 10);
+            // this.set('score', this.get('moves') * 10);
             this.trigger('gameOverScreen', this);
             // this.save();
 
@@ -117,11 +113,13 @@ module.exports = Backbone.Model.extend({
             this.set('xStart', this.get('xStart') - 1);
             this.set('moves', this.get('moves') + 1);
             this.set('startingEnergy', this.get('startingEnergy') - this.get('energyPerMove'));
+            this.set('score', this.get('moves') * 10);
+
         }
 
         if (this.get('startingEnergy') <= 0) {
             console.log("show restart screen");
-            this.set('score', this.get('moves') * 10);
+            // this.set('score', this.get('moves') * 10);
             this.trigger('gameOverScreen', this);
             // this.save();
 
@@ -134,11 +132,13 @@ module.exports = Backbone.Model.extend({
             this.set('xStart', this.get('xStart') + 1);
             this.set('moves', this.get('moves') + 1);
             this.set('startingEnergy', this.get('startingEnergy') - this.get('energyPerMove'));
+            this.set('score', this.get('moves') * 10);
+
         }
 
         if (this.get('startingEnergy') <= 0) {
             console.log("show restart screen");
-            this.set('score', this.get('moves') * 10);
+            // this.set('score', this.get('moves') * 10);
             this.trigger('gameOverScreen', this);
             // this.save();
         }

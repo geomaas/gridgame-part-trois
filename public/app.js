@@ -46,6 +46,7 @@ module.exports = Backbone.Model.extend({
         this.highscore = new HighScoreCollection();
     },
     // Initial value for data that the model is responsible for.
+    url: 'http://grid.queencityiron.com/api/highscore',
     defaults: {
         xStart: 0, //horizontal
 
@@ -61,28 +62,19 @@ module.exports = Backbone.Model.extend({
         playerType: "",
         energyPerMove: "",
         startingEnergy: "",
+        powerup: 10,
 
         size: "",
 
         score: 0,
     },
-    // updatePlayer: function(player, size, energy) {
-    //     this.set('player', player);
-    //     this.set('size', size);
-    //     this.set('energy', energy);
-    //     // this.get('moves');
-    //     console.log("model", player, size, energy);
-
-    // this.save();
-    // this.save(undefined, {
-    //     success: function() {
-    //         console.log("hooray!")
-    //     },
-    //     error: function() {
-    //         console.error('boooo no save');
-    //     },
-    // });
-    // },
+    setPowerUp: function() {
+        this.get('xPowerUp');
+        this.get('yPowerUp');
+    },
+    addPowerUp: function() {
+        this.set('startingEnergy', this.get('startingEnergy') + this.get('powerup'));
+    },
     setPlayer: function() {
         console.log("setPlayer function firing");
         // from riggan via luke. thanks to riggan for explanation cus that shit is confusing.
@@ -110,12 +102,12 @@ module.exports = Backbone.Model.extend({
     },
 
     sendScore: function() {
-        let highscore = new HighScoreCollection({
-            name: this.get('name'),
-            score: this.get('score'),
-            playerType: this.get('playerType')
-        });
-        this.highscore.pushScore();
+        this.get('name'),
+        this.get('score'),
+        this.get('playerType')
+        this.save();
+        console.log("sending score info");
+        // this.highscore.pushScore();
     },
 
     up: function() {
@@ -124,10 +116,12 @@ module.exports = Backbone.Model.extend({
             this.set('yStart', this.get('yStart') - 1);
             this.set('moves', this.get('moves') + 1);
             this.set('startingEnergy', this.get('startingEnergy') - this.get('energyPerMove'));
+            this.set('score', this.get('moves') * 10);
+
         }
         if (this.get('startingEnergy') <= 0) {
             console.log("show restart screen");
-            this.set('score', this.get('moves') * 10);
+            // this.set('score', this.get('moves') * 10);
             this.trigger('gameOverScreen', this);
             // this.save();
         }
@@ -139,10 +133,12 @@ module.exports = Backbone.Model.extend({
             this.set('yStart', this.get('yStart') + 1);
             this.set('moves', this.get('moves') + 1);
             this.set('startingEnergy', this.get('startingEnergy') - this.get('energyPerMove'));
+            this.set('score', this.get('moves') * 10);
+
         }
         if (this.get('startingEnergy') <= 0) {
             console.log("show restart screen");
-            this.set('score', this.get('moves') * 10);
+            // this.set('score', this.get('moves') * 10);
             this.trigger('gameOverScreen', this);
             // this.save();
 
@@ -155,11 +151,13 @@ module.exports = Backbone.Model.extend({
             this.set('xStart', this.get('xStart') - 1);
             this.set('moves', this.get('moves') + 1);
             this.set('startingEnergy', this.get('startingEnergy') - this.get('energyPerMove'));
+            this.set('score', this.get('moves') * 10);
+
         }
 
         if (this.get('startingEnergy') <= 0) {
             console.log("show restart screen");
-            this.set('score', this.get('moves') * 10);
+            // this.set('score', this.get('moves') * 10);
             this.trigger('gameOverScreen', this);
             // this.save();
 
@@ -172,11 +170,13 @@ module.exports = Backbone.Model.extend({
             this.set('xStart', this.get('xStart') + 1);
             this.set('moves', this.get('moves') + 1);
             this.set('startingEnergy', this.get('startingEnergy') - this.get('energyPerMove'));
+            this.set('score', this.get('moves') * 10);
+
         }
 
         if (this.get('startingEnergy') <= 0) {
             console.log("show restart screen");
-            this.set('score', this.get('moves') * 10);
+            // this.set('score', this.get('moves') * 10);
             this.trigger('gameOverScreen', this);
             // this.save();
         }
@@ -196,7 +196,7 @@ module.exports = Backbone.Collection.extend({
     model: HighScore,
 
     getServerScore: function() {
-      console.log("start high score fetch request");
+        console.log("start high score fetch request");
         let self = this;
 
         this.fetch({
@@ -205,14 +205,14 @@ module.exports = Backbone.Collection.extend({
                 self.trigger('scores', this.model);
             },
             failure: function() {
-              console.log("you done fucked up the score fetch request");
+                console.log("you done fucked up the score fetch request");
             },
         });
     },
-    pushScore: function() {
-      self.save();
-      console.log("saving score to server");
-    },
+    // pushScore: function() {
+    //     console.log("saving score to server");
+    //     this.invoke('save');
+    // },
 
 });
 
@@ -345,25 +345,6 @@ module.exports = Backbone.Router.extend({
     },
 
     overScreen: function () {
-        // General pattern: 'if you're not supposed to be
-        // here, get out'.
-        // if (id === null) {
-        //     this.navigate('player', { trigger: true });
-        //     return;
-        // }
-        //
-        // let self = this;
-        //
-        // let serverPlayer = new HighScoreCollection();
-        // serverPlayer.fetch({
-        //     url: `http://grid.queencityiron.com/api/highscore`,
-        //     success: function () {
-        //       console.log("fetch function worked", serverPlayer);
-        //         // todo: fix `this`
-        //         self.overScreen.model = serverPlayer;
-        //         self.overScreen.render();
-        //     },
-        // });
         console.log('restart test');
         this.player.el.classList.add('hidden');
         this.grid.el.classList.add('hidden');
@@ -397,16 +378,17 @@ module.exports = Backbone.View.extend({
 
     addscore: function() {
       this.model.sendScore();
+      location.reload();
     },
 
     // How to update the DOM when things change
     render: function() {
-        console.log(this.model.get('name'));
+        // console.log(this.model.get('name'));
         let finalscore = this.el.querySelector('#gameover-score');
         finalscore.textContent = this.model.get('score');
 
         let finalplayer = this.el.querySelector('#gameover-player');
-        finalplayer.textContent = this.model.get('player');
+        finalplayer.textContent = this.model.get('name');
 
         let finalsize = this.el.querySelector('#gameover-size');
         finalsize.textContent = this.model.get('playerType');
@@ -441,9 +423,6 @@ module.exports = Backbone.View.extend({
     // Event listeners to set up
     events: {
         // 'event-name selector': 'function-to-call'
-
-        // 'click #large-start': 'largeEnterPlayer',
-        // 'click #small-start': 'smallEnterPlayer',
         'click .btn': 'enterPlayer',
     },
     enterPlayer: function() {
@@ -451,24 +430,6 @@ module.exports = Backbone.View.extend({
         this.trigger('newGame', this.model);
         let player = document.getElementById('player-name').value;
     },
-
-    // largeEnterPlayer: function() {
-    //     let player = document.getElementById('player-name').value;
-    //     let size = "large"
-    //     let energy = 150
-    //         // console.log("view", size);
-    //     this.model.updatePlayer(player, size, energy);
-    //     this.trigger('newGame', this.model);
-    // },
-    // smallEnterPlayer: function() {
-    //     let player = document.getElementById('player-name').value;
-    //     let size = "small"
-    //     let energy = 100
-    //         // console.log("view", size);
-    //     this.model.updatePlayer(player, size, energy);
-    //     this.trigger('newGame', this.model);
-    //
-    // },
     // How to update the DOM when things change
     render: function() {
 
@@ -497,7 +458,7 @@ module.exports = Backbone.View.extend({
     // 'Constructor' function - what to do at the beginning
     initialize: function () {
         this.model.on('change', this.render, this); // this as third arg
-
+        this.on('powerup',this.resetPowerUp, this);
     },
 
     // Event listeners to set up
@@ -507,17 +468,18 @@ module.exports = Backbone.View.extend({
         'click #down': 'clickDown',
         'click #left': 'clickLeft',
         'click #right': 'clickRight',
+        'powerup' : 'resetPowerUp',
 
     },
 
     clickUp: function () {
         this.model.up();
-        console.log("clicked up");
+        // console.log("clicked up");
     },
 
     clickDown: function () {
         this.model.down();
-        console.log("clicked down");
+        // console.log("clicked down");
     },
 
     clickLeft: function () {
@@ -526,6 +488,10 @@ module.exports = Backbone.View.extend({
 
     clickRight: function () {
         this.model.right();
+    },
+    resetPowerUp: function() {
+      this.model.setPowerUp();
+      this.model.addPowerUp();
     },
 
 
@@ -545,13 +511,17 @@ module.exports = Backbone.View.extend({
         energyCounter.textContent = this.model.get('startingEnergy')
 
         let gridname = this.el.querySelector('#gridname')
-        name.textContent = this.model.get('player');
-        console.log("testY", this.model.get('player'));
+        gridname.textContent = this.model.get('name');
+        // console.log("testY", this.model.get('name'));
+
+        let gridscore = this.el.querySelector('#score')
+        gridscore.textContent = this.model.get('score');
 
         let grid = this.el.querySelector('#gameboard');
         grid.innerHTML = "";
 
-        console.log(this.model.get('xStart'));
+        // console.log(this.model.get('xStart'));
+        let that = this;
 
         for (var y = 0; y < 10; y++) {
           let rowY = document.createElement('div');
@@ -565,6 +535,11 @@ module.exports = Backbone.View.extend({
             }
             if (this.model.get('yPowerUp') === y && this.model.get('xPowerUp') === x) {
               colX.classList.add('power-up');
+            }
+            if (this.model.get('yStart') === this.model.get('yPowerUp') && this.model.get('xStart') === this.model.get('xPowerUp')) {
+              console.log("powered up!!!");
+              // let that = this;
+              that.trigger('powerup', this.model)
             }
 
             rowY.appendChild(colX);

@@ -23,16 +23,17 @@ module.exports = Backbone.View.extend({
 
     addscore: function() {
       this.model.sendScore();
+      location.reload();
     },
 
     // How to update the DOM when things change
     render: function() {
-        console.log(this.model.get('name'));
+        // console.log(this.model.get('name'));
         let finalscore = this.el.querySelector('#gameover-score');
         finalscore.textContent = this.model.get('score');
 
         let finalplayer = this.el.querySelector('#gameover-player');
-        finalplayer.textContent = this.model.get('player');
+        finalplayer.textContent = this.model.get('name');
 
         let finalsize = this.el.querySelector('#gameover-size');
         finalsize.textContent = this.model.get('playerType');

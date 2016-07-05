@@ -14,9 +14,9 @@ module.exports = Backbone.Model.extend({
 
         yStart: 0, //vertical
 
-        xPowerUp: Math.ceil(Math.random() * 10),
+        xPowerUp: 0,
 
-        yPowerUp: Math.ceil(Math.random() * 10),
+        yPowerUp: 0,
 
         moves: 0,
 
@@ -31,8 +31,8 @@ module.exports = Backbone.Model.extend({
         score: 0,
     },
     setPowerUp: function() {
-        this.get('xPowerUp');
-        this.get('yPowerUp');
+        this.set('xPowerUp', Math.ceil(Math.random() * 10));
+        this.set('yPowerUp', Math.ceil(Math.random() * 10));
     },
     addPowerUp: function() {
         this.set('startingEnergy', this.get('startingEnergy') + this.get('powerup'));

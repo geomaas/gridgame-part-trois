@@ -95,7 +95,7 @@ module.exports = Backbone.Model.extend({
             this.set('yStart', this.get('yStart') + 1);
             this.set('moves', this.get('moves') + 1);
             this.set('startingEnergy', this.get('startingEnergy') - this.get('energyPerMove'));
-            this.set('score', this.get('moves') * 10);
+            this.set('score', this.get('moves') * 1);
 
         }
         if (this.get('startingEnergy') <= 0) {

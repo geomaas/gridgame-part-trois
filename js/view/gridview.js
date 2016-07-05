@@ -2,7 +2,7 @@ module.exports = Backbone.View.extend({
     // 'Constructor' function - what to do at the beginning
     initialize: function () {
         this.model.on('change', this.render, this); // this as third arg
-        this.on('powerup',this.resetPowerUp, this);
+        // this.on('powerup',this.resetPowerUp, this);
     },
 
     // Event listeners to set up

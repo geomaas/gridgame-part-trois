@@ -133,7 +133,7 @@ module.exports = Backbone.Model.extend({
             this.set('yStart', this.get('yStart') + 1);
             this.set('moves', this.get('moves') + 1);
             this.set('startingEnergy', this.get('startingEnergy') - this.get('energyPerMove'));
-            this.set('score', this.get('moves') * 10);
+            this.set('score', this.get('moves') * 1);
 
         }
         if (this.get('startingEnergy') <= 0) {
@@ -458,7 +458,7 @@ module.exports = Backbone.View.extend({
     // 'Constructor' function - what to do at the beginning
     initialize: function () {
         this.model.on('change', this.render, this); // this as third arg
-        this.on('powerup',this.resetPowerUp, this);
+        // this.on('powerup',this.resetPowerUp, this);
     },
 
     // Event listeners to set up
